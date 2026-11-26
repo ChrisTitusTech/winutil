@@ -57,6 +57,7 @@ winutil/
 ├── config/                    # JSON configuration files
 │   ├── applications.json      # Application definitions
 │   ├── icons/                 # One <app key>.png per application
+│   ├── languages.json         # Localization catalogs (en, es)
 │   ├── tweaks.json           # Tweak definitions
 │   ├── feature.json          # Windows feature definitions
 │   └── preset.json           # Preset configurations
@@ -117,6 +118,7 @@ The interface itself lives in `Start-WinUtilUserInterface`, not here. See [Threa
 
 **Files**:
 - `applications.json`: Application definitions with WinGet/Choco IDs
+- `languages.json`: UI localization catalogs containing strings, categories, tweaks, and features (en, es)
 - `tweaks.json`: Registry tweaks and their undo actions
 - `feature.json`: Windows features that can be enabled/disabled
 - `preset.json`: Predefined tweak combinations
@@ -417,6 +419,52 @@ Update UI
 - `registry[].DefaultValue`: Effective value when the registry entry is absent
 - `service`: Services to change
 - `OriginalValue/State`: For undo functionality
+
+### languages.json Structure (Localization)
+
+```json title="config/languages.json"
+{
+  "en": {
+    "Tab_Install": "Install",
+    "Tab_Install_Prefix": "",
+    "Tab_Install_Underline": "I",
+    "Tab_Install_Rest": "nstall",
+    "Settings_ToolTip": "Settings",
+    "categories": {
+      "Applications": "Applications",
+      "Essential Tweaks": "Essential Tweaks"
+    },
+    "tweaks": {
+      "WPFTweaksTelemetry": {
+        "Content": "Disable Telemetry",
+        "Description": "Disables Microsoft Telemetry"
+      }
+    },
+    "features": {
+      "WPFFeaturesHyperV": {
+        "Content": "Hyper-V",
+        "Description": "Enables Hyper-V virtualization"
+      }
+    }
+  },
+  "es": {
+    "Tab_Install": "Instalar",
+    "Tab_Install_Prefix": "",
+    "Tab_Install_Underline": "I",
+    "Tab_Install_Rest": "nstalar",
+    "Settings_ToolTip": "Configuración",
+    "categories": { ... },
+    "tweaks": { ... },
+    "features": { ... }
+  }
+}
+```
+
+**Structure & Rules**:
+- **Language Catalogs**: Keyed by two-letter ISO language code (`en`, `es`).
+- **UI Strings**: Top-level keys correspond to WPF control names or semantic identifiers (`Tab_*`, `Menu_*`, `Chip_*`, `Win11ISO_*`, `AppX_*`).
+- **Key Parity**: Both catalogs must maintain 100% key parity across root strings, `categories`, `tweaks`, and `features`.
+- **Dynamic Application**: Applied at runtime via `Invoke-WinUtilLanguageChange` to immediately update labels, text blocks, tooltips, and access keys.
 
 ## Threading Model
 

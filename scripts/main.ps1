@@ -35,6 +35,7 @@ $sync.configs.appx.PSObject.Properties | ForEach-Object {
 }
 $sync.preferences.theme = "Auto"
 $sync.preferences.packagemanager = "Winget"
+$sync.preferences.language = "en"
 
 function Remove-WinUtilTempScript {
     <#

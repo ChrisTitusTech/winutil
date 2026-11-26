@@ -107,6 +107,12 @@ function Start-WinUtilUserInterface {
     $sync.Form.Add_LocationChanged({ Request-WinUtilWindowInsets })
     $sync.Form.Add_DpiChanged({ Request-WinUtilWindowInsets })
 
+    if ($sync.preferences.language) {
+        Measure-WinUtilStep -Scope "UI" -Name "apply language" -ScriptBlock {
+            Invoke-WinUtilLanguageChange -Language $sync.preferences.language
+        }
+    }
+
     # Built here so it carries this runspace's session state: posted work then runs as ordinary
     # interface code, not a much slower cross-runspace nested pipeline. Invoke-WPFUIThread is the
     # caller-facing side.
@@ -442,6 +448,14 @@ function Start-WinUtilUserInterface {
     $sync["ExportEnvironmentReportMenuItem"].Add_Click({
         Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
         Invoke-WPFExportEnvironmentReport
+    })
+    $sync["EnglishLanguageMenuItem"].Add_Click({
+        Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
+        Invoke-WinUtilLanguageChange -Language "en"
+    })
+    $sync["SpanishLanguageMenuItem"].Add_Click({
+        Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
+        Invoke-WinUtilLanguageChange -Language "es"
     })
     $sync["AboutMenuItem"].Add_Click({
         Invoke-WPFPopup -Action "Hide" -Popups @("Settings")

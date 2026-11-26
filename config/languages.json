@@ -1,0 +1,1190 @@
+{
+    "en": {
+        "_meta": "English (default) — keys match the XAML Name or a stable label ID",
+        "Tab_Install": "Install",
+        "Tab_Install_Underline": "I",
+        "Tab_Install_Rest": "nstall",
+        "Tab_Tweaks": "Tweaks",
+        "Tab_Tweaks_Underline": "T",
+        "Tab_Tweaks_Rest": "weaks",
+        "Tab_Config": "Config",
+        "Tab_Config_Underline": "C",
+        "Tab_Config_Rest": "onfig",
+        "Tab_Updates": "Updates",
+        "Tab_Updates_Underline": "U",
+        "Tab_Updates_Rest": "pdates",
+        "Tab_Win11Creator": "Win11 Creator",
+        "Tab_Win11Creator_Underline": "W",
+        "Tab_Win11Creator_Rest": "in11 Creator",
+        "Settings_ToolTip": "Settings",
+        "Minimize_ToolTip": "Minimize",
+        "Close_ToolTip": "Close",
+        "Menu_Import": "Import",
+        "Menu_Import_ToolTip": "Import Configuration from exported file.",
+        "Menu_Export": "Export",
+        "Menu_Export_ToolTip": "Export Selected Elements and copy execution command to clipboard.",
+        "Menu_ExportEnvironmentReport": "Export Environment Report",
+        "Menu_ExportEnvironmentReport_ToolTip": "Export a read-only diagnostics report for troubleshooting.",
+        "Menu_About": "About",
+        "Menu_Documentation": "Documentation",
+        "Menu_Sponsors": "Sponsors",
+        "Theme_ToolTip": "Change the WinUtil UI Theme",
+        "Theme_Auto": "Auto",
+        "Theme_Auto_ToolTip": "Follow the Windows Theme",
+        "Theme_Dark": "Dark",
+        "Theme_Dark_ToolTip": "Use Dark Theme",
+        "Theme_Light": "Light",
+        "Theme_Light_ToolTip": "Use Light Theme",
+        "FontScaling_ToolTip": "Adjust Font Scaling for Accessibility",
+        "FontScaling_Title": "Font Scaling",
+        "FontScaling_Small": "Small",
+        "FontScaling_Large": "Large",
+        "FontScaling_Reset": "Reset",
+        "FontScaling_Apply": "Apply",
+        "Language_ToolTip": "Change Language / Cambiar idioma",
+        "Language_English": "English",
+        "Language_Spanish": "Español",
+        "SearchBar_ToolTip": "Press Ctrl-F and type app name to filter application list below. Press Esc to reset the filter",
+        "FilterCategory_ToolTip": "Filter by category. Ctrl click to select more than one.",
+        "Chip_All": "All",
+        "Chip_Browsers": "Browsers",
+        "Chip_Communications": "Communications",
+        "Chip_Development": "Development",
+        "Chip_Document": "Document",
+        "Chip_Games": "Games",
+        "Chip_MicrosoftTools": "Microsoft Tools",
+        "Chip_MultimediaTools": "Multimedia Tools",
+        "Chip_ProTools": "Pro Tools",
+        "Chip_SelfhostedTools": "Selfhosted Tools",
+        "Chip_Utilities": "Utilities",
+        "Tweaks_RecommendedSelections": "Recommended Selections:",
+        "Tweaks_Standard": " Standard ",
+        "Tweaks_Minimal": " Minimal ",
+        "Tweaks_Advanced": " Advanced ",
+        "Tweaks_Clear": " Clear ",
+        "Tweaks_SelectInstalledTweaks": " Select Installed Tweaks ",
+        "Tweaks_AppXRemoval": " AppX Removal ",
+        "Tweaks_RunTweaks": "Run Tweaks",
+        "Tweaks_UndoSelectedTweaks": "Undo Selected Tweaks",
+        "Tweaks_Note": "Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.\nRecommended selections are for normal users and if you are unsure do NOT check anything else!",
+        "OfflineMode": "⚠ Offline Mode - No Internet Connection",
+        "Updates_Title": "Windows Update Profiles",
+        "Updates_Description": "Choose how Windows receives updates. Each profile replaces the Windows Update settings managed by WinUtil.",
+        "Updates_SystemWide": "Changes apply system-wide. Restart Windows after switching profiles. Use Restore Defaults to undo WinUtil update policies.",
+        "Updates_Recommended": "Recommended",
+        "Updates_Recommended_Subtitle": "Balanced security and stability",
+        "Updates_Recommended_Bullet1": "- Defers feature updates for 365 days",
+        "Updates_Recommended_Bullet2": "- Defers quality updates for 4 days",
+        "Updates_Recommended_Bullet3": "- Excludes drivers from quality updates",
+        "Updates_Recommended_Bullet4": "- Notifies when downloaded updates are ready to install",
+        "Updates_DisableUpdates": "Disable Updates",
+        "Updates_DisableUpdates_Subtitle": "Advanced use only",
+        "Updates_DisableUpdates_Bullet1": "- Disables automatic update policy",
+        "Updates_DisableUpdates_Bullet2": "- Stops update services and scheduled tasks",
+        "Updates_DisableUpdates_Bullet3": "- Clears downloaded update files",
+        "Updates_DisableUpdates_Warning": "Security updates will not be installed while this profile is active.",
+        "Updates_WindowsDefault": "Windows Default",
+        "Updates_WindowsDefault_Subtitle": "Return control to Windows",
+        "Updates_WindowsDefault_Bullet1": "- Removes Windows Update policies applied by WinUtil",
+        "Updates_WindowsDefault_Bullet2": "- Restores update service startup settings",
+        "Updates_WindowsDefault_Bullet3": "- Re-enables update scheduled tasks",
+        "Updates_WindowsDefault_UndoHint": "Use this to undo the Recommended or Disable profile.",
+        "Updates_ProEdition": "Available on Windows Pro, Enterprise, and Education editions.",
+        "Updates_RestoreDefaults": "Restore Defaults",
+        "Updates_ApplyRecommended": "Apply Recommended",
+        "Updates_Apply": "Apply",
+        "Win11ISO_Title": "Run Windows ISO Modification and Creator",
+        "Win11ISO_Step1": "1   Select ISO",
+        "Win11ISO_Step2": "2   Modify Image",
+        "Win11ISO_Step3": "3   Output",
+        "Win11ISO_SelectISO": "Select your Windows 11 ISO",
+        "Win11ISO_OfficialISO": " You must use an official Microsoft ISO",
+        "Win11ISO_Browse": "Browse",
+        "Win11ISO_MountVerify": "Mount & Verify ISO",
+        "Win11ISO_NoISO": "No ISO selected...",
+        "Win11ISO_Ready": "Ready. Please select a Windows 11 ISO to begin.",
+        "Win11ISO_ImageFile": "Image file",
+        "Win11ISO_FileSize": "File size:",
+        "Win11ISO_MountedAt": "Mounted at",
+        "Win11ISO_Edition": "Windows edition",
+        "Win11ISO_NA": "N/A",
+        "Win11ISO_WhatThisDoes": "What this does to the image",
+        "Win11ISO_ModifyImage": "Modify the image",
+        "Win11ISO_BypassTPM": "Bypasses the TPM, Secure Boot, CPU, RAM and storage checks",
+        "Win11ISO_SkipMSAccount": "Skips the Microsoft account screen so you can use a local account",
+        "Win11ISO_RemoveApps": "Removes the preinstalled apps and the OneDrive setup",
+        "Win11ISO_TurnOffTelemetry": "Turns off telemetry, Copilot, the chat icon and search box suggestions",
+        "Win11ISO_PinEdition": "Pins the edition you picked above so Setup does not choose another one",
+        "Win11ISO_InjectDrivers": "Inject current system drivers",
+        "Win11ISO_InjectDrivers_ToolTip": "Injects boot-storage drivers for Setup and adds exported drivers to the selected install.wim edition individually, skipping incompatible packages.",
+        "Win11ISO_SeveralMinutes": "This can take several minutes. Progress is written to the status log.",
+        "Win11ISO_SaveISO": "Save as an ISO File",
+        "Win11ISO_WriteToDrive": "Write Directly to a USB Drive (ERASES DRIVE)",
+        "Win11ISO_EraseWrite": "Erase & Write to USB",
+        "Win11ISO_ImageReady": "Your image is ready",
+        "Win11ISO_Working": "Working...",
+        "Win11ISO_DoneHint": "Done with this image? Clear the temporary files and start again from step 1.",
+        "Win11ISO_StartOver": "Start Over",
+        "Win11ISO_OpenDownloadPage": "Open Microsoft Download Page",
+        "Win11ISO_ISOFile": "ISO file",
+        "Win11ISO_USBDrive": "USB drive",
+        "Win11ISO_StatusLog": "Status Log",
+        "Win11ISO_Back_ToolTip": "Back to the previous step",
+        "Win11ISO_Forward_ToolTip": "Forward to the next step",
+        "Win11ISO_CleanReset_ToolTip": "Delete the temporary working directory and go back to the first step",
+        "Nav_Install": "Install/Upgrade Applications",
+        "Nav_Install_Desc": "Install or upgrade the selected applications",
+        "Nav_Uninstall": "Uninstall Applications",
+        "Nav_Uninstall_Desc": "Uninstall the selected applications",
+        "Nav_UpgradeAll": "Upgrade all Applications",
+        "Nav_UpgradeAll_Desc": "Upgrade all applications to the latest version",
+        "Nav_CollapseAll": "Collapse All Categories",
+        "Nav_ExpandAll": "Expand All Categories",
+        "Nav_ClearSelection": "Clear Selection",
+        "Nav_ShowInstalled": "Show Installed Apps",
+        "Nav_SelectedApps": "Selected Apps: ",
+        "Nav_FOSS": "Free and Open Source Software",
+        "Updates_RecommendedEdition": "Available on Windows Pro, Enterprise, and Education editions.",
+        "Win11ISO_SelectISOSubtitle": "Choose an official Windows 11 ISO downloaded from Microsoft. It will be mounted and checked before anything is changed.",
+        "Win11ISO_UnofficialWarning": "Third-party, pre-modified, or unofficial images are not supported and may produce broken results. This is only meant for fresh and new Windows installs.",
+        "Win11ISO_DownloadPageHint": "On the download page choose Windows 11, your language, and 64-bit (x64).",
+        "Win11ISO_ModifyImageSubtitle": "Pick what goes into the image, then start. This takes several minutes depending on your hardware.",
+        "Win11ISO_ImageReadySubtitle": "Save the modified image as an ISO file, or write it straight to a USB drive you can boot from.",
+        "Win11ISO_USBEraseWarning": "!! All data on the selected USB drive will be permanently erased !!",
+        "Win11ISO_Refresh": "Refresh",
+        "AppX_Selections": "Selections:",
+        "AppX_Default": " Default ",
+        "AppX_SelectInstalled": " Select Installed ",
+        "AppX_SelectAll": " Select All ",
+        "AppX_ClearSelection": " Clear Selection ",
+        "AppX_Note": "Note: Select the Windows AppX packages you wish to install or remove.\n'Install Selected' registers a local manifest for the current user when available, then falls back to the Microsoft Store.\n'Remove Selected' removes packages for all users and stops new profiles from getting them by default.",
+        "categories": {
+            "Essential Tweaks": "Essential Tweaks",
+            "Customize Preferences": "Customize Preferences",
+            "Performance Plans - NOT FOR LAPTOPS": "Performance Plans - NOT FOR LAPTOPS",
+            "z__Advanced Tweaks - CAUTION": "Advanced Tweaks - CAUTION",
+            "____Actions": "Actions",
+            "__Package Manager": "Package Manager",
+            "__Selection": "Selection",
+            "Features": "Features",
+            "Fixes": "Fixes",
+            "Legacy Windows Panels": "Legacy Windows Panels",
+            "Powershell Profile Powershell 7+ Only": "Powershell Profile Powershell 7+ Only",
+            "Remote Access": "Remote Access"
+        },
+        "tweaks": {
+            "WPFTweaksActivity": {
+                "Content": "Activity History - Disable",
+                "Description": "Stops Windows from publishing or uploading user activities while preserving clipboard history."
+            },
+            "WPFTweaksHiber": {
+                "Content": "Hibernation - Disable",
+                "Description": "Hibernation is really meant for laptops as it saves what's in memory before turning the PC off. It really should never be used."
+            },
+            "WPFTweaksWidget": {
+                "Content": "Widgets - Remove",
+                "Description": "Removes the annoying widgets in the bottom left of the Taskbar."
+            },
+            "WPFTweaksRevertStartMenu": {
+                "Content": "Start Menu Previous Layout - Enable",
+                "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2. On newer versions of Windows !!THIS TWEAK WILL NOT WORK!!"
+            },
+            "WPFTweaksDisableStoreSearch": {
+                "Content": "Microsoft Store Recommended Search Results - Disable",
+                "Description": "Will not display recommended Microsoft Store apps when searching for apps in the Start menu."
+            },
+            "WPFTweaksLocation": {
+                "Content": "Location Tracking - Disable",
+                "Description": "Disables Location Tracking."
+            },
+            "WPFTweaksServices": {
+                "Content": "Services - Set to Manual",
+                "Description": "Sets some services to Manual startup."
+            },
+            "WPFTweaksSvcHostSplitting": {
+                "Content": "svchost.exe Splitting - Disable",
+                "Description": "Disables service-host splitting to reduce the number of svchost.exe processes and modestly lower memory overhead. Recommended for low-performance systems with 12 GB of RAM or less. Can interfere with Xbox services. Restart Windows after changing this setting."
+            },
+            "WPFTweaksBraveDebloat": {
+                "Content": "Brave Browser - Debloat",
+                "Description": "Disables various annoyances like Brave Rewards, Leo AI, Crypto Wallet and VPN."
+            },
+            "WPFTweaksDisableWarningForUnsignedRdp": {
+                "Content": "RDP Unsigned File Warnings - Disable",
+                "Description": "Disables warnings shown when launching unsigned RDP files introduced with the latest Windows 10 and 11 updates."
+            },
+            "WPFTweaksEdgeDebloat": {
+                "Content": "Microsoft Edge - Debloat",
+                "Description": "Disables various telemetry options, popups, and other annoyances in Edge."
+            },
+            "WPFTweaksConsumerFeatures": {
+                "Content": "ConsumerFeatures - Disable",
+                "Description": "Stops promoted app installs and reduces app suggestions from Microsoft Store content."
+            },
+            "WPFTweaksTelemetry": {
+                "Content": "Telemetry - Disable",
+                "Description": "Disables Microsoft Telemetry."
+            },
+            "WPFTweaksDeliveryOptimization": {
+                "Content": "Delivery Optimization - Disable",
+                "Description": "Stops Windows from using your bandwidth to upload updates to other PCs on the internet or local network."
+            },
+            "WPFTweaksRemoveEdge": {
+                "Content": "Microsoft Edge - Remove",
+                "Description": "Uninstalls Microsoft Edge by creating dummy MicrosoftEdge.exe file in the legacy Edge folder. This tricks Windows into unlocking the official Edge uninstaller allowing for a system-level removal."
+            },
+            "WPFTweaksDisableBitLocker": {
+                "Content": "BitLocker - Disable",
+                "Description": "Disables BitLocker."
+            },
+            "WPFTweaksUTC": {
+                "Content": "Date & Time - Set Time to UTC",
+                "Description": "Essential for computers that are dual booting. Fixes the time sync with Linux systems."
+            },
+            "WPFTweaksRemoveOneDrive": {
+                "Content": "Microsoft OneDrive - Remove",
+                "Description": "Denies permission to remove OneDrive user files, then uses its own uninstaller to remove it and restores the original permission afterward."
+            },
+            "WPFTweaksRemoveHomeAndGallery": {
+                "Content": "File Explorer Home and Gallery - Disable",
+                "Description": "Removes the Home and Gallery from Explorer and sets This PC as default."
+            },
+            "WPFTweaksDisplay": {
+                "Content": "Visual Effects - Set to Best Performance",
+                "Description": "Sets the system preferences to performance. You can do this manually with sysdm.cpl as well."
+            },
+            "WPFTweaksReservedStorage": {
+                "Content": "Disable Reserved Storage",
+                "Description": "Disables Windows Reserved Storage (7-10 GB held for updates/temp files). Recommended only on small drives. Re-enable before major Windows feature updates to avoid installation failures."
+            },
+            "WPFTweaksRestorePoint": {
+                "Content": "Restore Point - Create",
+                "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications."
+            },
+            "WPFTweaksEndTaskOnTaskbar": {
+                "Content": "End Task With Right Click - Enable",
+                "Description": "Enables option to end task when right-clicking a program in the taskbar."
+            },
+            "WPFTweaksStorage": {
+                "Content": "Storage Sense - Disable",
+                "Description": "Storage Sense deletes temp files automatically."
+            },
+            "WPFTweaksWindowsAI": {
+                "Content": "Windows AI - Disable And Remove",
+                "Description": "Removes and disables all AI features/packages"
+            },
+            "WPFTweaksWPBT": {
+                "Content": "Windows Platform Binary Table (WPBT) - Disable",
+                "Description": "If enabled, WPBT allows your computer vendor to execute programs at boot time, such as anti-theft software, software drivers, as well as force install software without user consent. Poses potential security risk."
+            },
+            "WPFTweaksPreventDeviceMetadataFromNetwork": {
+                "Content": "Prevent Device Companion Apps",
+                "Description": "Prevents additional software from being installed when plugging in devices (e.g. Ads when plugging in a monitor). Poses potential security risk."
+            },
+            "WPFTweaksRazerBlock": {
+                "Content": "Razer Software Auto-Install - Disable",
+                "Description": "Blocks ALL Razer Software installations. The hardware works fine without any software."
+            },
+            "WPFTweaksLogiBlock": {
+                "Content": "Logitech Download Assistant Auto-Install - Disable",
+                "Description": "Blocks the Logi Download Assistant that Windows Update keeps reinstalling with Logitech device drivers. Logitech hardware keeps working without it."
+            },
+            "WPFTweaksDisableNotifications": {
+                "Content": "System Tray Notifications & Calendar - Disable",
+                "Description": "Disables all Notifications INCLUDING Calendar."
+            },
+            "WPFTweaksBlockAdobeNet": {
+                "Content": "Adobe URL Block List - Enable",
+                "Description": "Reduces user interruptions by selectively blocking connections to Adobe's activation and telemetry servers. Credit: Ruddernation-Designs"
+            },
+            "WPFTweaksRightClickMenu": {
+                "Content": "Right-Click Menu Previous Layout - Enable",
+                "Description": "Restores the classic context menu when right-clicking in File Explorer, replacing the simplified Windows 11 version."
+            },
+            "WPFTweaksDiskCleanup": {
+                "Content": "Disk Cleanup - Run",
+                "Description": "Runs Disk Cleanup on Drive C: and removes old Windows Updates."
+            },
+            "WPFTweaksDeleteTempFiles": {
+                "Content": "Temporary Files - Remove",
+                "Description": "Erases TEMP Folders."
+            },
+            "WPFTweaksIPv46": {
+                "Content": "IPv6 - Set IPv4 as Preferred",
+                "Description": "Setting the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured."
+            },
+            "WPFTweaksTeredo": {
+                "Content": "Teredo - Disable",
+                "Description": "Teredo network tunneling is an IPv6 feature that can cause additional latency, but may cause problems with some games."
+            },
+            "WPFTweaksDisableIPv6": {
+                "Content": "IPv6 - Disable",
+                "Description": "Disables IPv6."
+            },
+            "WPFTweaksDisableBGapps": {
+                "Content": "Background Apps - Disable",
+                "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Windows 11."
+            },
+            "WPFTweaksDisableExplorerAutoDiscovery": {
+                "Content": "File Explorer Automatic Folder Discovery - Disable",
+                "Description": "Windows Explorer automatically tries to guess the type of the folder based on its contents, slowing down the browsing experience. WARNING! Will disable File Explorer grouping."
+            },
+            "WPFToggleDetailedBSoD": {
+                "Content": "BSoD Verbose Mode",
+                "Description": "Gives more information when you blue screen."
+            },
+            "WPFToggleBatteryPercentage": {
+                "Content": "System Tray Battery Percentage",
+                "Description": "Shows numeric battery percentage next to the battery icon in the system tray."
+            },
+            "WPFToggleDarkMode": {
+                "Content": "Dark Theme for Windows",
+                "Description": "Dark Mode for the system and applications."
+            },
+            "WPFToggleShowExt": {
+                "Content": "File Explorer File Extensions",
+                "Description": "Shows .file extensions in Explorer (.exe, .png, etc.)"
+            },
+            "WPFToggleHiddenFiles": {
+                "Content": "File Explorer Hidden Files",
+                "Description": "Reveals hidden files in Explorer."
+            },
+            "WPFToggleVerboseLogon": {
+                "Content": "Logon Verbose Mode",
+                "Description": "Show detailed messages during startup/shutdown."
+            },
+            "WPFToggleNewOutlook": {
+                "Content": "Microsoft Outlook New Version",
+                "Description": "This will ensure the new Outlook application is used."
+            },
+            "WPFToggleScrollbars": {
+                "Content": "Scrollbars Always Visible",
+                "Description": "If enabled, scrollbars will always be visible. If disabled, Windows will automatically hide scrollbars when not in use."
+            },
+            "WPFMultiplaneOverlay": {
+                "Content": "Multiplane Overlay",
+                "Description": "Multiplane Overlay composes multiple image layers, which can sometimes cause issues with graphics cards. Changes to this preference are applied immediately."
+            },
+            "WPFToggleMouseAcceleration": {
+                "Content": "Mouse Acceleration",
+                "Description": "Makes it so Cursor movement is affected by the speed of your physical mouse movements."
+            },
+            "WPFToggleNumLock": {
+                "Content": "Num Lock on Startup",
+                "Description": "Toggle the Num Lock key state when your computer starts."
+            },
+            "WPFToggleWindowSnapping": {
+                "Content": "Window Snapping",
+                "Description": "Toggles the window snapping feature when dragging windows."
+            },
+            "WPFToggleStandbyFix": {
+                "Content": "S0 Sleep Network Connectivity",
+                "Description": "Toggles network connectivity during S0 Sleep which is low power idle in modern laptops."
+            },
+            "WPFToggleS3Sleep": {
+                "Content": "S3 Sleep",
+                "Description": "Toggles between Modern Standby and S3 Sleep, which cuts off power to the CPU while continuing to refresh the memory."
+            },
+            "WPFToggleHideSettingsHome": {
+                "Content": "Settings Home Page",
+                "Description": "Toggles the Home Page in the Windows Settings app."
+            },
+            "WPFToggleBingSearch": {
+                "Content": "Start Menu Bing Search",
+                "Description": "Toggles Bing web search results in Windows Search."
+            },
+            "WPFToggleLoginBlur": {
+                "Content": "Logon Screen Acrylic Blur",
+                "Description": "Toggles the acrylic blur effect on login screen background."
+            },
+            "WPFToggleDisableLockscreen": {
+                "Content": "Lock Screen - Disable",
+                "Description": "Skips the lock screen entirely and goes directly to the sign-in screen on boot and wake."
+            },
+            "WPFToggleStartMenuRecommendations": {
+                "Content": "Start Menu Recommendations",
+                "Description": "Toggles the recommendations section in the Start Menu. WARNING: This will also disable Windows Spotlight on your Lock Screen as a side effect."
+            },
+            "WPFToggleStickyKeys": {
+                "Content": "Sticky Keys",
+                "Description": "Toggles the Sticky Keys, which activate when clicking shift rapidly."
+            },
+            "WPFToggleTaskbarAlignment": {
+                "Content": "Taskbar Centered Icons",
+                "Description": "Toggles the Taskbar alignment either to the left or center."
+            },
+            "WPFToggleTaskbarSearch": {
+                "Content": "Taskbar Search Icon",
+                "Description": "Toggles the Search Button on the Taskbar."
+            },
+            "WPFToggleTaskView": {
+                "Content": "Taskbar Task View Icon",
+                "Description": "Toggles the Task View Button in the Taskbar."
+            },
+            "WPFToggleGameMode": {
+                "Content": "Game Mode",
+                "Description": "Toggles Windows prioritizes gaming performance by allocating system resources to games."
+            },
+            "WPFToggleLongPaths": {
+                "Content": "Enable Long Paths",
+                "Description": "Toggles support for file paths longer than 260 characters in Explorer."
+            },
+            "WPFOOSUbutton": {
+                "Content": "O&O ShutUp10++ - Run",
+                "Description": "Downloads O&O ShutUp10++ (about 82 MB) from oo-software.com on every click and launches it. Nothing is installed; the file is saved under %LocalAppData%\\winutil."
+            },
+            "WPFchangedns": {
+                "Content": "DNS - Set to:",
+                "Description": ""
+            },
+            "WPFAddUltPerf": {
+                "Content": "Ultimate Performance Profile - Enable",
+                "Description": ""
+            },
+            "WPFRemoveUltPerf": {
+                "Content": "Ultimate Performance Profile - Disable",
+                "Description": ""
+            }
+        },
+        "features": {
+            "WPFFeaturesdotnet": {
+                "Content": ".NET Framework (Versions 2, 3, 4) - Enable",
+                "Description": ".NET and .NET Framework is a developer platform made up of tools, programming languages, and libraries for building many different types of applications."
+            },
+            "WPFFixesNTPPool": {
+                "Content": "NTP Server - Enable",
+                "Description": "Replaces the default Windows NTP server (time.windows.com) with pool.ntp.org for improved time synchronization accuracy and reliability."
+            },
+            "WPFFeatureshyperv": {
+                "Content": "Hyper-V - Enable",
+                "Description": "Hyper-V is a hardware virtualization product developed by Microsoft that allows users to create and manage virtual machines."
+            },
+            "WPFFeatureslegacymedia": {
+                "Content": "Legacy Media Components (WMP, DirectPlay) - Enable",
+                "Description": "Enables legacy programs from previous versions of Windows."
+            },
+            "WPFFeaturewsl": {
+                "Content": "Windows Subsystem for Linux (WSL) - Enable",
+                "Description": "Windows Subsystem for Linux is an optional feature of Windows that allows Linux programs to run natively on Windows without the need for a separate virtual machine or dual booting."
+            },
+            "WPFFeaturenfs": {
+                "Content": "Network File System (NFS) - Enable",
+                "Description": "Network File System (NFS) is a mechanism for storing files on a network."
+            },
+            "WPFFeatureRegBackup": {
+                "Content": "Registry Backup (Daily Task 12:30am) - Enable",
+                "Description": "Enables daily registry backup, previously disabled by Microsoft in Windows 10 1803."
+            },
+            "WPFFeatureEnableLegacyRecovery": {
+                "Content": "Legacy F8 Boot Recovery - Enable",
+                "Description": "Enables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."
+            },
+            "WPFFeatureDisableLegacyRecovery": {
+                "Content": "Legacy F8 Boot Recovery - Disable",
+                "Description": "Disables Advanced Boot Options screen that lets you start Windows in advanced troubleshooting modes."
+            },
+            "WPFFeaturesSandbox": {
+                "Content": "Windows Sandbox - Enable",
+                "Description": "Windows Sandbox is a lightweight virtual machine that provides a temporary desktop environment to safely run applications and programs in isolation."
+            },
+            "WPFFeatureInstall": {
+                "Content": "Install Features",
+                "Description": ""
+            },
+            "WPFPanelAutologin": {
+                "Content": "AutoLogon - Run",
+                "Description": ""
+            },
+            "WPFFixesUpdate": {
+                "Content": "Windows Update - Reset",
+                "Description": ""
+            },
+            "WPFFixesNetwork": {
+                "Content": "Network - Reset",
+                "Description": ""
+            },
+            "WPFPanelDISM": {
+                "Content": "System Corruption Scan - Run",
+                "Description": ""
+            },
+            "WPFFixesWinget": {
+                "Content": "WinGet - Reinstall",
+                "Description": ""
+            },
+            "WPFPanelComputer": {
+                "Content": "Computer Management",
+                "Description": ""
+            },
+            "WPFPanelControl": {
+                "Content": "Control Panel",
+                "Description": ""
+            },
+            "WPFPanelMouse": {
+                "Content": "Mouse Properties",
+                "Description": ""
+            },
+            "WPFPanelNetwork": {
+                "Content": "Network Connections",
+                "Description": ""
+            },
+            "WPFPanelPower": {
+                "Content": "Power Panel",
+                "Description": ""
+            },
+            "WPFPanelPrinter": {
+                "Content": "Printer Panel",
+                "Description": ""
+            },
+            "WPFPanelPrograms": {
+                "Content": "Programs and Features",
+                "Description": ""
+            },
+            "WPFPanelRegion": {
+                "Content": "Region",
+                "Description": ""
+            },
+            "WPFPanelSecurity": {
+                "Content": "Security and Maintenance",
+                "Description": ""
+            },
+            "WPFPanelSound": {
+                "Content": "Sound Settings",
+                "Description": ""
+            },
+            "WPFPanelSystem": {
+                "Content": "System Properties",
+                "Description": ""
+            },
+            "WPFPanelTimedate": {
+                "Content": "Time and Date",
+                "Description": ""
+            },
+            "WPFPanelFirewall": {
+                "Content": "Windows Defender Firewall",
+                "Description": ""
+            },
+            "WPFPanelRestore": {
+                "Content": "Windows Restore",
+                "Description": ""
+            },
+            "WPFWinUtilInstallPSProfile": {
+                "Content": "CTT PowerShell Profile - Install",
+                "Description": ""
+            },
+            "WPFWinUtilUninstallPSProfile": {
+                "Content": "CTT PowerShell Profile - Remove",
+                "Description": ""
+            },
+            "WPFWinUtilSSHServer": {
+                "Content": "OpenSSH Server - Enable",
+                "Description": ""
+            }
+        },
+        "Tab_Install_Prefix": "",
+        "Tab_Tweaks_Prefix": "",
+        "Tab_Config_Prefix": "",
+        "Tab_Updates_Prefix": "",
+        "Tab_Win11Creator_Prefix": "",
+        "AppX_BackToTweaks": "Back to Tweaks",
+        "AppX_InstallSelected": "Install Selected",
+        "AppX_RemoveSelected": "Remove Selected",
+        "Nav_CollapseAll_Desc": "Collapse all application categories",
+        "Nav_ExpandAll_Desc": "Expand all application categories",
+        "Nav_ClearSelection_Desc": "Clear the selection of applications",
+        "Nav_ShowInstalled_Desc": "Show installed applications"
+    },
+    "es": {
+        "_meta": "Español — traducción de la interfaz",
+        "Tab_Install": "Instalar",
+        "Tab_Install_Underline": "I",
+        "Tab_Install_Rest": "nstalar",
+        "Tab_Tweaks": "Ajustes",
+        "Tab_Tweaks_Underline": "t",
+        "Tab_Tweaks_Rest": "es",
+        "Tab_Config": "Config",
+        "Tab_Config_Underline": "C",
+        "Tab_Config_Rest": "onfig",
+        "Tab_Updates": "Actualiz.",
+        "Tab_Updates_Underline": "u",
+        "Tab_Updates_Rest": "aliz.",
+        "Tab_Win11Creator": "Win11 Creador",
+        "Tab_Win11Creator_Underline": "W",
+        "Tab_Win11Creator_Rest": "in11 Creador",
+        "Settings_ToolTip": "Configuración",
+        "Minimize_ToolTip": "Minimizar",
+        "Close_ToolTip": "Cerrar",
+        "Menu_Import": "Importar",
+        "Menu_Import_ToolTip": "Importar configuración desde archivo exportado.",
+        "Menu_Export": "Exportar",
+        "Menu_Export_ToolTip": "Exportar elementos seleccionados y copiar comando de ejecución al portapapeles.",
+        "Menu_ExportEnvironmentReport": "Exportar informe del entorno",
+        "Menu_ExportEnvironmentReport_ToolTip": "Exportar un informe de diagnóstico de solo lectura para resolución de problemas.",
+        "Menu_About": "Acerca de",
+        "Menu_Documentation": "Documentación",
+        "Menu_Sponsors": "Patrocinadores",
+        "Theme_ToolTip": "Cambiar el tema de la interfaz de WinUtil",
+        "Theme_Auto": "Automático",
+        "Theme_Auto_ToolTip": "Seguir el tema de Windows",
+        "Theme_Dark": "Oscuro",
+        "Theme_Dark_ToolTip": "Usar tema oscuro",
+        "Theme_Light": "Claro",
+        "Theme_Light_ToolTip": "Usar tema claro",
+        "FontScaling_ToolTip": "Ajustar escala de fuente para accesibilidad",
+        "FontScaling_Title": "Escala de fuente",
+        "FontScaling_Small": "Pequeña",
+        "FontScaling_Large": "Grande",
+        "FontScaling_Reset": "Restablecer",
+        "FontScaling_Apply": "Aplicar",
+        "Language_ToolTip": "Change Language / Cambiar idioma",
+        "Language_English": "English",
+        "Language_Spanish": "Español",
+        "SearchBar_ToolTip": "Presiona Ctrl-F y escribe el nombre de la app para filtrar la lista. Presiona Esc para restablecer el filtro",
+        "FilterCategory_ToolTip": "Filtrar por categoría. Ctrl+clic para seleccionar más de una.",
+        "Chip_All": "Todos",
+        "Chip_Browsers": "Navegadores",
+        "Chip_Communications": "Comunicaciones",
+        "Chip_Development": "Desarrollo",
+        "Chip_Document": "Documentos",
+        "Chip_Games": "Juegos",
+        "Chip_MicrosoftTools": "Herramientas Microsoft",
+        "Chip_MultimediaTools": "Herramientas multimedia",
+        "Chip_ProTools": "Herramientas profesionales",
+        "Chip_SelfhostedTools": "Herramientas autoalojadas",
+        "Chip_Utilities": "Utilidades",
+        "Tweaks_RecommendedSelections": "Selecciones recomendadas:",
+        "Tweaks_Standard": " Estándar ",
+        "Tweaks_Minimal": " Mínimo ",
+        "Tweaks_Advanced": " Avanzado ",
+        "Tweaks_Clear": " Limpiar ",
+        "Tweaks_SelectInstalledTweaks": " Seleccionar ajustes instalados ",
+        "Tweaks_AppXRemoval": " Eliminación de AppX ",
+        "Tweaks_RunTweaks": "Ejecutar ajustes",
+        "Tweaks_UndoSelectedTweaks": "Deshacer ajustes seleccionados",
+        "Tweaks_Note": "Nota: Pasa el cursor sobre los elementos para obtener una mejor descripción. Ten cuidado ya que muchos de estos ajustes modificarán tu sistema de forma significativa.\nLas selecciones recomendadas son para usuarios normales. Si no estás seguro, ¡NO marques nada más!",
+        "OfflineMode": "⚠ Modo sin conexión - Sin conexión a Internet",
+        "Updates_Title": "Perfiles de Windows Update",
+        "Updates_Description": "Elige cómo Windows recibe actualizaciones. Cada perfil reemplaza la configuración de Windows Update gestionada por WinUtil.",
+        "Updates_SystemWide": "Los cambios se aplican a todo el sistema. Reinicia Windows después de cambiar de perfil. Usa Restaurar valores predeterminados para deshacer las políticas de actualización de WinUtil.",
+        "Updates_Recommended": "Recomendado",
+        "Updates_Recommended_Subtitle": "Seguridad y estabilidad equilibradas",
+        "Updates_Recommended_Bullet1": "- Aplaza actualizaciones de características 365 días",
+        "Updates_Recommended_Bullet2": "- Aplaza actualizaciones de calidad 4 días",
+        "Updates_Recommended_Bullet3": "- Excluye controladores de actualizaciones de calidad",
+        "Updates_Recommended_Bullet4": "- Notifica cuando las actualizaciones descargadas están listas para instalar",
+        "Updates_DisableUpdates": "Desactivar actualizaciones",
+        "Updates_DisableUpdates_Subtitle": "Solo para uso avanzado",
+        "Updates_DisableUpdates_Bullet1": "- Desactiva la política de actualización automática",
+        "Updates_DisableUpdates_Bullet2": "- Detiene los servicios de actualización y las tareas programadas",
+        "Updates_DisableUpdates_Bullet3": "- Limpia los archivos de actualización descargados",
+        "Updates_DisableUpdates_Warning": "Las actualizaciones de seguridad no se instalarán mientras este perfil esté activo.",
+        "Updates_WindowsDefault": "Predeterminado de Windows",
+        "Updates_WindowsDefault_Subtitle": "Devolver el control a Windows",
+        "Updates_WindowsDefault_Bullet1": "- Elimina las políticas de Windows Update aplicadas por WinUtil",
+        "Updates_WindowsDefault_Bullet2": "- Restaura la configuración de inicio de los servicios de actualización",
+        "Updates_WindowsDefault_Bullet3": "- Reactiva las tareas programadas de actualización",
+        "Updates_WindowsDefault_UndoHint": "Usa esto para deshacer el perfil Recomendado o Desactivar.",
+        "Updates_ProEdition": "Disponible en ediciones Windows Pro, Enterprise y Education.",
+        "Updates_RestoreDefaults": "Restaurar valores predeterminados",
+        "Updates_ApplyRecommended": "Aplicar recomendado",
+        "Updates_Apply": "Aplicar",
+        "Win11ISO_Title": "Ejecutar modificación y creación de ISO de Windows",
+        "Win11ISO_Step1": "1   Seleccionar ISO",
+        "Win11ISO_Step2": "2   Modificar imagen",
+        "Win11ISO_Step3": "3   Salida",
+        "Win11ISO_SelectISO": "Selecciona tu ISO de Windows 11",
+        "Win11ISO_OfficialISO": " Debes usar una ISO oficial de Microsoft",
+        "Win11ISO_Browse": "Examinar",
+        "Win11ISO_MountVerify": "Montar y verificar ISO",
+        "Win11ISO_NoISO": "No se ha seleccionado ninguna ISO...",
+        "Win11ISO_Ready": "Listo. Por favor selecciona una ISO de Windows 11 para comenzar.",
+        "Win11ISO_ImageFile": "Archivo de imagen",
+        "Win11ISO_FileSize": "Tamaño del archivo:",
+        "Win11ISO_MountedAt": "Montado en",
+        "Win11ISO_Edition": "Edición de Windows",
+        "Win11ISO_NA": "N/D",
+        "Win11ISO_WhatThisDoes": "Lo que esto le hace a la imagen",
+        "Win11ISO_ModifyImage": "Modificar la imagen",
+        "Win11ISO_BypassTPM": "Omite las verificaciones de TPM, Arranque seguro, CPU, RAM y almacenamiento",
+        "Win11ISO_SkipMSAccount": "Omite la pantalla de cuenta Microsoft para que puedas usar una cuenta local",
+        "Win11ISO_RemoveApps": "Elimina las aplicaciones preinstaladas y la configuración de OneDrive",
+        "Win11ISO_TurnOffTelemetry": "Desactiva la telemetría, Copilot, el icono de chat y las sugerencias del cuadro de búsqueda",
+        "Win11ISO_PinEdition": "Fija la edición que elegiste arriba para que el instalador no elija otra",
+        "Win11ISO_InjectDrivers": "Inyectar controladores del sistema actual",
+        "Win11ISO_InjectDrivers_ToolTip": "Inyecta controladores de arranque/almacenamiento para la Instalación y agrega controladores exportados a la edición install.wim seleccionada individualmente, omitiendo paquetes incompatibles.",
+        "Win11ISO_SeveralMinutes": "Esto puede tardar varios minutos. El progreso se escribe en el registro de estado.",
+        "Win11ISO_SaveISO": "Guardar como archivo ISO",
+        "Win11ISO_WriteToDrive": "Escribir directamente a una unidad USB (BORRA LA UNIDAD)",
+        "Win11ISO_EraseWrite": "Borrar y escribir en USB",
+        "Win11ISO_ImageReady": "Tu imagen está lista",
+        "Win11ISO_Working": "Procesando...",
+        "Win11ISO_DoneHint": "¿Terminaste con esta imagen? Limpia los archivos temporales y comienza de nuevo desde el paso 1.",
+        "Win11ISO_StartOver": "Comenzar de nuevo",
+        "Win11ISO_OpenDownloadPage": "Abrir página de descarga de Microsoft",
+        "Win11ISO_ISOFile": "Archivo ISO",
+        "Win11ISO_USBDrive": "Unidad USB",
+        "Win11ISO_StatusLog": "Registro de estado",
+        "Win11ISO_Back_ToolTip": "Volver al paso anterior",
+        "Win11ISO_Forward_ToolTip": "Avanzar al siguiente paso",
+        "Win11ISO_CleanReset_ToolTip": "Eliminar el directorio de trabajo temporal y volver al primer paso",
+        "Nav_Install": "Instalar/Actualizar aplicaciones",
+        "Nav_Install_Desc": "Instalar o actualizar las aplicaciones seleccionadas",
+        "Nav_Uninstall": "Desinstalar aplicaciones",
+        "Nav_Uninstall_Desc": "Desinstalar las aplicaciones seleccionadas",
+        "Nav_UpgradeAll": "Actualizar todas las aplicaciones",
+        "Nav_UpgradeAll_Desc": "Actualizar todas las aplicaciones a la última versión",
+        "Nav_CollapseAll": "Contraer todas las categorías",
+        "Nav_ExpandAll": "Expandir todas las categorías",
+        "Nav_ClearSelection": "Limpiar selección",
+        "Nav_ShowInstalled": "Mostrar apps instaladas",
+        "Nav_SelectedApps": "Apps seleccionadas: ",
+        "Nav_FOSS": "Software libre y de código abierto",
+        "Updates_RecommendedEdition": "Disponible en ediciones Windows Pro, Enterprise y Education.",
+        "Win11ISO_SelectISOSubtitle": "Elige una ISO oficial de Windows 11 descargada de Microsoft. Será montada y comprobada antes de realizar cambios.",
+        "Win11ISO_UnofficialWarning": "Imágenes de terceros, premodificadas o no oficiales no están soportadas y pueden dar errores. Esto está pensado únicamente para instalaciones limpias de Windows.",
+        "Win11ISO_DownloadPageHint": "En la página de descarga elige Windows 11, tu idioma y 64 bits (x64).",
+        "Win11ISO_ModifyImageSubtitle": "Elige lo que se aplicará a la imagen y luego comienza. Esto tarda varios minutos según tu hardware.",
+        "Win11ISO_ImageReadySubtitle": "Guarda la imagen modificada como archivo ISO o escríbela directamente en una unidad USB arrancable.",
+        "Win11ISO_USBEraseWarning": "¡¡ Todos los datos de la unidad USB seleccionada se borrarán permanentemente ¡¡",
+        "Win11ISO_Refresh": "Actualizar",
+        "AppX_Selections": "Selecciones:",
+        "AppX_Default": " Predeterminado ",
+        "AppX_SelectInstalled": " Seleccionar instalados ",
+        "AppX_SelectAll": " Seleccionar todo ",
+        "AppX_ClearSelection": " Limpiar selección ",
+        "AppX_Note": "Nota: Selecciona los paquetes AppX de Windows que deseas instalar o eliminar.\n'Instalar seleccionados' registra un manifiesto local para el usuario actual o recurre a Microsoft Store.\n'Eliminar seleccionados' elimina paquetes para todos los usuarios e impide que nuevos perfiles los reciban.",
+        "categories": {
+            "Essential Tweaks": "Ajustes esenciales",
+            "Customize Preferences": "Personalizar preferencias",
+            "Performance Plans - NOT FOR LAPTOPS": "Planes de rendimiento - NO PARA PORTÁTILES",
+            "z__Advanced Tweaks - CAUTION": "Ajustes avanzados - PRECAUCIÓN",
+            "____Actions": "Acciones",
+            "__Package Manager": "Gestor de paquetes",
+            "__Selection": "Selección",
+            "Features": "Funcionalidades",
+            "Fixes": "Correcciones",
+            "Legacy Windows Panels": "Paneles clásicos de Windows",
+            "Powershell Profile Powershell 7+ Only": "Perfil PowerShell (solo PS 7+)",
+            "Remote Access": "Acceso remoto"
+        },
+        "tweaks": {
+            "WPFTweaksActivity": {
+                "Content": "Historial de actividad - Desactivar",
+                "Description": "Evita que Windows publique o suba actividades del usuario, conservando el historial del portapapeles."
+            },
+            "WPFTweaksHiber": {
+                "Content": "Hibernación - Desactivar",
+                "Description": "La hibernación está pensada para portátiles ya que guarda la memoria antes de apagar. Realmente no debería usarse."
+            },
+            "WPFTweaksWidget": {
+                "Content": "Widgets - Eliminar",
+                "Description": "Elimina los molestos widgets en la parte inferior izquierda de la barra de tareas."
+            },
+            "WPFTweaksRevertStartMenu": {
+                "Content": "Menú Inicio clásico - Activar",
+                "Description": "Restaura el diseño anterior del menú Inicio previo al despliegue gradual del nuevo en 25H2. En versiones más recientes de Windows ¡¡ESTE AJUSTE NO FUNCIONARÁ!!"
+            },
+            "WPFTweaksDisableStoreSearch": {
+                "Content": "Resultados recomendados de MS Store - Desactivar",
+                "Description": "No mostrará aplicaciones recomendadas de Microsoft Store al buscar aplicaciones en el menú Inicio."
+            },
+            "WPFTweaksLocation": {
+                "Content": "Rastreo de ubicación - Desactivar",
+                "Description": "Desactiva el rastreo de ubicación del sistema."
+            },
+            "WPFTweaksServices": {
+                "Content": "Servicios - Establecer en manual",
+                "Description": "Establece algunos servicios no esenciales en inicio manual para optimizar recursos."
+            },
+            "WPFTweaksSvcHostSplitting": {
+                "Content": "División de svchost.exe - Desactivar",
+                "Description": "Desactiva la división de host de servicios para reducir procesos svchost.exe y el consumo de RAM. Recomendado para equipos con 12 GB de RAM o menos."
+            },
+            "WPFTweaksBraveDebloat": {
+                "Content": "Navegador Brave - Eliminar bloatware",
+                "Description": "Desactiva varias molestias como Brave Rewards, Leo AI, billetera de criptomonedas y VPN."
+            },
+            "WPFTweaksDisableWarningForUnsignedRdp": {
+                "Content": "Advertencias RDP sin firmar - Desactivar",
+                "Description": "Desactiva las advertencias al ejecutar archivos RDP sin firmar introducidas en las últimas actualizaciones de Windows."
+            },
+            "WPFTweaksEdgeDebloat": {
+                "Content": "Microsoft Edge - Eliminar bloatware",
+                "Description": "Desactiva varias opciones de telemetría, ventanas emergentes y molestias en Edge."
+            },
+            "WPFTweaksConsumerFeatures": {
+                "Content": "Funciones de consumidor - Desactivar",
+                "Description": "Detiene instalaciones de aplicaciones promocionadas y reduce sugerencias de Microsoft Store."
+            },
+            "WPFTweaksTelemetry": {
+                "Content": "Telemetría - Desactivar",
+                "Description": "Desactiva la telemetría y recopilación de datos de Microsoft."
+            },
+            "WPFTweaksDeliveryOptimization": {
+                "Content": "Optimización de entrega - Desactivar",
+                "Description": "Evita que Windows use tu ancho de banda para subir actualizaciones a otros PCs en Internet o la red local."
+            },
+            "WPFTweaksRemoveEdge": {
+                "Content": "Microsoft Edge - Eliminar",
+                "Description": "Desinstala Microsoft Edge creando un archivo ficticio en la carpeta legacy para desbloquear el desinstalador oficial a nivel del sistema."
+            },
+            "WPFTweaksDisableBitLocker": {
+                "Content": "BitLocker - Desactivar",
+                "Description": "Desactiva el cifrado de unidad BitLocker."
+            },
+            "WPFTweaksUTC": {
+                "Content": "Fecha y hora - Establecer en UTC",
+                "Description": "Esencial para equipos con arranque dual. Corrige la desincronización de hora con sistemas Linux."
+            },
+            "WPFTweaksRemoveOneDrive": {
+                "Content": "Microsoft OneDrive - Eliminar",
+                "Description": "Deniega permiso para borrar archivos del usuario, desinstala OneDrive y restaura el permiso original."
+            },
+            "WPFTweaksRemoveHomeAndGallery": {
+                "Content": "Inicio y Galería del Explorador - Desactivar",
+                "Description": "Elimina Inicio y Galería del Explorador de archivos y establece 'Este equipo' como predeterminado."
+            },
+            "WPFTweaksDisplay": {
+                "Content": "Efectos visuales - Mejor rendimiento",
+                "Description": "Establece las preferencias visuales del sistema para optimizar el rendimiento."
+            },
+            "WPFTweaksReservedStorage": {
+                "Content": "Almacenamiento reservado - Desactivar",
+                "Description": "Desactiva el almacenamiento reservado (7-10 GB retenidos para actualizaciones/temporales). Recomendado en discos pequeños. Reactívalo antes de actualizaciones mayores de Windows para evitar errores de instalación."
+            },
+            "WPFTweaksRestorePoint": {
+                "Content": "Punto de restauración - Crear",
+                "Description": "Crea un punto de restauración del sistema por si necesitas revertir cambios de WinUtil."
+            },
+            "WPFTweaksEndTaskOnTaskbar": {
+                "Content": "Finalizar tarea con clic derecho - Activar",
+                "Description": "Habilita la opción de finalizar tarea al hacer clic derecho en una aplicación en la barra de tareas."
+            },
+            "WPFTweaksStorage": {
+                "Content": "Sensor de almacenamiento - Desactivar",
+                "Description": "El Sensor de almacenamiento elimina archivos temporales automáticamente."
+            },
+            "WPFTweaksWindowsAI": {
+                "Content": "IA de Windows - Desactivar y eliminar",
+                "Description": "Elimina y desactiva todas las funciones y paquetes de Inteligencia Artificial (Copilot, Recall, etc.)."
+            },
+            "WPFTweaksWPBT": {
+                "Content": "Tabla binaria WPBT - Desactivar",
+                "Description": "Si está activa, WPBT permite al fabricante ejecutar programas al arrancar sin consentimiento. Supone un riesgo potencial."
+            },
+            "WPFTweaksPreventDeviceMetadataFromNetwork": {
+                "Content": "Apps complementarias de dispositivos - Prevenir",
+                "Description": "Previene la instalación de software adicional al conectar periféricos (ej. publicidad al conectar un monitor)."
+            },
+            "WPFTweaksRazerBlock": {
+                "Content": "Software Razer - Desactivar autoinstalación",
+                "Description": "Bloquea todas las instalaciones de software Razer Synapse. El hardware funciona perfectamente sin él."
+            },
+            "WPFTweaksLogiBlock": {
+                "Content": "Asistente Logi - Desactivar autoinstalación",
+                "Description": "Bloquea el Asistente de descarga Logi que Windows Update reinstala continuamente con los controladores."
+            },
+            "WPFTweaksDisableNotifications": {
+                "Content": "Notificaciones y calendario - Desactivar",
+                "Description": "Desactiva todas las notificaciones del sistema INCLUYENDO las del Calendario."
+            },
+            "WPFTweaksBlockAdobeNet": {
+                "Content": "Bloqueo de URLs de Adobe - Activar",
+                "Description": "Reduce interrupciones bloqueando selectivamente conexiones a servidores de activación y telemetría de Adobe."
+            },
+            "WPFTweaksRightClickMenu": {
+                "Content": "Menú contextual clásico - Activar",
+                "Description": "Restaura el menú contextual clásico de Windows al hacer clic derecho en el Explorador."
+            },
+            "WPFTweaksDiskCleanup": {
+                "Content": "Limpieza de disco - Ejecutar",
+                "Description": "Ejecuta la Limpieza de disco en la unidad C: y elimina archivos antiguos de Windows Update."
+            },
+            "WPFTweaksDeleteTempFiles": {
+                "Content": "Archivos temporales - Eliminar",
+                "Description": "Borra el contenido de las carpetas de archivos temporales del sistema."
+            },
+            "WPFTweaksIPv46": {
+                "Content": "IPv6 - Establecer IPv4 como preferido",
+                "Description": "Preferir IPv4 ofrece beneficios de latencia y seguridad en redes privadas donde IPv6 no está configurado."
+            },
+            "WPFTweaksTeredo": {
+                "Content": "Teredo - Desactivar",
+                "Description": "El túnel de red Teredo es una función IPv6 que puede causar latencia adicional y fallos en juegos."
+            },
+            "WPFTweaksDisableIPv6": {
+                "Content": "IPv6 - Desactivar",
+                "Description": "Desactiva por completo el protocolo IPv6 en las interfaces de red."
+            },
+            "WPFTweaksDisableBGapps": {
+                "Content": "Aplicaciones en segundo plano - Desactivar",
+                "Description": "Desactiva la ejecución en segundo plano de las aplicaciones de Microsoft Store."
+            },
+            "WPFTweaksDisableExplorerAutoDiscovery": {
+                "Content": "Detección de carpetas del Explorador - Desactivar",
+                "Description": "Evita que el Explorador intente adivinar el tipo de carpeta según su contenido. ¡Desactivará la agrupación!"
+            },
+            "WPFToggleDetailedBSoD": {
+                "Content": "Modo detallado de pantalla azul (BSoD)",
+                "Description": "Muestra información técnica detallada en la pantalla de error azul de Windows."
+            },
+            "WPFToggleBatteryPercentage": {
+                "Content": "Porcentaje de batería en la bandeja",
+                "Description": "Muestra el porcentaje numérico de batería junto al icono en la bandeja del sistema."
+            },
+            "WPFToggleDarkMode": {
+                "Content": "Tema oscuro para Windows",
+                "Description": "Activa el modo oscuro para el sistema operativo y las aplicaciones compatibles."
+            },
+            "WPFToggleShowExt": {
+                "Content": "Extensiones de archivo del Explorador",
+                "Description": "Muestra siempre las extensiones de los archivos (.exe, .png, etc.) en el Explorador."
+            },
+            "WPFToggleHiddenFiles": {
+                "Content": "Archivos ocultos del Explorador",
+                "Description": "Muestra los archivos y carpetas ocultos en el Explorador de archivos."
+            },
+            "WPFToggleVerboseLogon": {
+                "Content": "Modo detallado de inicio de sesión",
+                "Description": "Muestra mensajes detallados de estado durante el inicio y apagado del sistema."
+            },
+            "WPFToggleNewOutlook": {
+                "Content": "Microsoft Outlook versión nueva",
+                "Description": "Asegura el uso de la nueva aplicación de Outlook."
+            },
+            "WPFToggleScrollbars": {
+                "Content": "Barras de desplazamiento siempre visibles",
+                "Description": "Mantiene las barras de desplazamiento siempre visibles en lugar de ocultarlas automáticamente."
+            },
+            "WPFMultiplaneOverlay": {
+                "Content": "Superposición multiplanar (MPO)",
+                "Description": "Compone múltiples capas de imagen, lo que a veces causa parpadeos o fallos en tarjetas gráficas."
+            },
+            "WPFToggleMouseAcceleration": {
+                "Content": "Aceleración del ratón",
+                "Description": "Determina si el movimiento del cursor depende de la velocidad del movimiento físico del ratón."
+            },
+            "WPFToggleNumLock": {
+                "Content": "Bloqueo numérico al inicio",
+                "Description": "Activa o desactiva automáticamente la tecla Bloq Num al iniciar el equipo."
+            },
+            "WPFToggleWindowSnapping": {
+                "Content": "Ajuste de ventanas (Snap)",
+                "Description": "Activa o desactiva la función de acoplamiento de ventanas al arrastrarlas a los bordes."
+            },
+            "WPFToggleStandbyFix": {
+                "Content": "Conectividad de red en reposo S0",
+                "Description": "Controla la conectividad de red durante el modo de suspensión de bajo consumo S0 en portátiles modernos."
+            },
+            "WPFToggleS3Sleep": {
+                "Content": "Suspensión clásica S3",
+                "Description": "Alterna entre Modern Standby y suspensión clásica S3, cortando energía a la CPU y reteniendo RAM."
+            },
+            "WPFToggleHideSettingsHome": {
+                "Content": "Página de inicio de Configuración",
+                "Description": "Muestra u oculta la página de inicio en la aplicación Configuración de Windows."
+            },
+            "WPFToggleBingSearch": {
+                "Content": "Búsqueda web de Bing en menú Inicio",
+                "Description": "Activa o desactiva los resultados de búsqueda web de Bing en la barra de búsqueda de Windows."
+            },
+            "WPFToggleLoginBlur": {
+                "Content": "Desenfoque en pantalla de inicio de sesión",
+                "Description": "Activa o desactiva el efecto de desenfoque acrílico en el fondo de inicio de sesión."
+            },
+            "WPFToggleDisableLockscreen": {
+                "Content": "Pantalla de bloqueo - Desactivar",
+                "Description": "Omite la pantalla de bloqueo y va directamente al cuadro de inicio de sesión al encender o despertar."
+            },
+            "WPFToggleStartMenuRecommendations": {
+                "Content": "Recomendaciones del menú Inicio",
+                "Description": "Muestra u oculta la sección de recomendados en Inicio. Desactiva también Windows Spotlight en bloqueo."
+            },
+            "WPFToggleStickyKeys": {
+                "Content": "Teclas especiales (Sticky Keys)",
+                "Description": "Activa o desactiva las teclas especiales que saltan al presionar Mayús/Shift rápidamente."
+            },
+            "WPFToggleTaskbarAlignment": {
+                "Content": "Iconos centrados en barra de tareas",
+                "Description": "Alterna la alineación de los iconos de la barra de tareas entre la izquierda o el centro."
+            },
+            "WPFToggleTaskbarSearch": {
+                "Content": "Icono de búsqueda en barra de tareas",
+                "Description": "Muestra u oculta el botón o cuadro de búsqueda en la barra de tareas."
+            },
+            "WPFToggleTaskView": {
+                "Content": "Icono de vista de tareas en barra de tareas",
+                "Description": "Muestra u oculta el botón de vista de tareas (escritorios virtuales) en la barra de tareas."
+            },
+            "WPFToggleGameMode": {
+                "Content": "Modo de juego",
+                "Description": "Prioriza el rendimiento de los juegos asignando recursos preferenciales del sistema."
+            },
+            "WPFToggleLongPaths": {
+                "Content": "Habilitar rutas largas de archivos",
+                "Description": "Habilita la compatibilidad con rutas de archivo de más de 260 caracteres en el Explorador."
+            },
+            "WPFOOSUbutton": {
+                "Content": "O&O ShutUp10++ - Ejecutar",
+                "Description": "Descarga y ejecuta O&O ShutUp10++ desde su web oficial para gestionar privacidad sin instalar nada."
+            },
+            "WPFchangedns": {
+                "Content": "DNS - Establecer en:",
+                "Description": "Configura los servidores DNS preferidos para tu conexión a Internet."
+            },
+            "WPFAddUltPerf": {
+                "Content": "Perfil de máximo rendimiento - Activar",
+                "Description": "Desbloquea y activa el plan de energía de Máximo Rendimiento (Ultimate Performance) de Windows."
+            },
+            "WPFRemoveUltPerf": {
+                "Content": "Perfil de máximo rendimiento - Desactivar",
+                "Description": "Elimina el plan de energía de Máximo Rendimiento y vuelve a los planes estándar."
+            }
+        },
+        "features": {
+            "WPFFeaturesdotnet": {
+                "Content": ".NET Framework (Versiones 2, 3, 4) - Activar",
+                "Description": ".NET Framework es una plataforma de desarrollo esencial para ejecutar aplicaciones creadas para Windows."
+            },
+            "WPFFixesNTPPool": {
+                "Content": "Servidor NTP - Activar",
+                "Description": "Reemplaza el servidor de hora de Windows con pool.ntp.org para mayor precisión y sincronización horaria."
+            },
+            "WPFFeatureshyperv": {
+                "Content": "Hyper-V - Activar",
+                "Description": "Hyper-V es una tecnología de virtualización de Microsoft para crear y gestionar máquinas virtuales."
+            },
+            "WPFFeatureslegacymedia": {
+                "Content": "Componentes multimedia clásicos - Activar",
+                "Description": "Activa Windows Media Player y DirectPlay para compatibilidad con juegos y programas antiguos."
+            },
+            "WPFFeaturewsl": {
+                "Content": "Subsistema de Windows para Linux (WSL) - Activar",
+                "Description": "Permite ejecutar entornos y aplicaciones nativas de Linux directamente en Windows sin máquinas virtuales."
+            },
+            "WPFFeaturenfs": {
+                "Content": "Sistema de archivos en red (NFS) - Activar",
+                "Description": "Cliente para montar y acceder a recursos compartidos de red NFS."
+            },
+            "WPFFeatureRegBackup": {
+                "Content": "Copia de seguridad del registro - Activar",
+                "Description": "Crea una tarea programada diaria (12:30 AM) para respaldar el Registro de Windows."
+            },
+            "WPFFeatureEnableLegacyRecovery": {
+                "Content": "Recuperación de arranque F8 clásica - Activar",
+                "Description": "Habilita la tecla F8 al arrancar para acceder fácilmente al menú de opciones de arranque avanzadas."
+            },
+            "WPFFeatureDisableLegacyRecovery": {
+                "Content": "Recuperación de arranque F8 clásica - Desactivar",
+                "Description": "Desactiva la pantalla de opciones de arranque avanzadas F8."
+            },
+            "WPFFeaturesSandbox": {
+                "Content": "Espacio aislado de Windows (Sandbox) - Activar",
+                "Description": "Entorno de escritorio temporal y desechable para probar aplicaciones sospechosas de forma segura."
+            },
+            "WPFFeatureInstall": {
+                "Content": "Instalar funcionalidades seleccionadas",
+                "Description": "Aplica e instala todas las características de Windows marcadas en la lista."
+            },
+            "WPFPanelAutologin": {
+                "Content": "Inicio automático de sesión - Ejecutar",
+                "Description": "Configura el inicio de sesión automático en Windows usando Autologon de Sysinternals."
+            },
+            "WPFFixesUpdate": {
+                "Content": "Windows Update - Restablecer",
+                "Description": "Reinicia los servicios y limpia la caché de Windows Update para reparar errores de descarga."
+            },
+            "WPFFixesNetwork": {
+                "Content": "Red - Restablecer",
+                "Description": "Restablece el catálogo Winsock, la pila TCP/IP y limpia la caché DNS a valores predeterminados."
+            },
+            "WPFPanelDISM": {
+                "Content": "Análisis de corrupción del sistema (DISM/SFC) - Ejecutar",
+                "Description": "Ejecuta comprobaciones de integridad del sistema y repara archivos dañados con DISM y SFC."
+            },
+            "WPFFixesWinget": {
+                "Content": "WinGet - Reinstalar",
+                "Description": "Descarga y reinstala la versión más reciente del administrador de paquetes Windows Package Manager."
+            },
+            "WPFPanelComputer": {
+                "Content": "Administración de equipos",
+                "Description": "Abre la consola clásica de Administración de equipos (compmgmt.msc)."
+            },
+            "WPFPanelControl": {
+                "Content": "Panel de control",
+                "Description": "Abre el Panel de control clásico de Windows."
+            },
+            "WPFPanelMouse": {
+                "Content": "Propiedades del ratón",
+                "Description": "Abre las propiedades clásicas de configuración del ratón (main.cpl)."
+            },
+            "WPFPanelNetwork": {
+                "Content": "Conexiones de red",
+                "Description": "Abre la ventana clásica de Conexiones de red (ncpa.cpl)."
+            },
+            "WPFPanelPower": {
+                "Content": "Opciones de energía",
+                "Description": "Abre las Opciones de energía clásicas (powercfg.cpl)."
+            },
+            "WPFPanelPrinter": {
+                "Content": "Panel de impresoras",
+                "Description": "Abre la lista de impresoras y dispositivos."
+            },
+            "WPFPanelPrograms": {
+                "Content": "Programas y características",
+                "Description": "Abre la interfaz clásica de desinstalación de programas (appwiz.cpl)."
+            },
+            "WPFPanelRegion": {
+                "Content": "Región e idioma",
+                "Description": "Abre las opciones de configuración regional de Windows (intl.cpl)."
+            },
+            "WPFPanelSecurity": {
+                "Content": "Seguridad y mantenimiento",
+                "Description": "Abre el panel de Seguridad y mantenimiento (wscui.cpl)."
+            },
+            "WPFPanelSound": {
+                "Content": "Configuración de sonido",
+                "Description": "Abre las propiedades clásicas de dispositivos de sonido (mmsys.cpl)."
+            },
+            "WPFPanelSystem": {
+                "Content": "Propiedades del sistema",
+                "Description": "Abre las Propiedades avanzadas del sistema (sysdm.cpl)."
+            },
+            "WPFPanelTimedate": {
+                "Content": "Fecha y hora",
+                "Description": "Abre la ventana clásica de ajuste de fecha y hora (timedate.cpl)."
+            },
+            "WPFPanelFirewall": {
+                "Content": "Firewall de Windows Defender",
+                "Description": "Abre la configuración clásica del Firewall de Windows (firewall.cpl)."
+            },
+            "WPFPanelRestore": {
+                "Content": "Restauración del sistema",
+                "Description": "Abre la herramienta de Restauración del sistema (rstrui.exe)."
+            },
+            "WPFWinUtilInstallPSProfile": {
+                "Content": "Perfil PowerShell de CTT - Instalar",
+                "Description": "Instala el perfil personalizado de PowerShell de Chris Titus Tech con alias útiles y Starship."
+            },
+            "WPFWinUtilUninstallPSProfile": {
+                "Content": "Perfil PowerShell de CTT - Eliminar",
+                "Description": "Elimina el perfil personalizado de PowerShell restaurando el original."
+            },
+            "WPFWinUtilSSHServer": {
+                "Content": "Servidor OpenSSH - Activar",
+                "Description": "Instala, inicia y habilita el servicio de servidor OpenSSH para acceso remoto seguro."
+            }
+        },
+        "Tab_Install_Prefix": "",
+        "Tab_Tweaks_Prefix": "Ajus",
+        "Tab_Config_Prefix": "",
+        "Tab_Updates_Prefix": "Act",
+        "Tab_Win11Creator_Prefix": "",
+        "AppX_BackToTweaks": "Volver a Ajustes",
+        "AppX_InstallSelected": "Instalar seleccionados",
+        "AppX_RemoveSelected": "Eliminar seleccionados",
+        "Nav_CollapseAll_Desc": "Contraer todas las categorías de aplicaciones",
+        "Nav_ExpandAll_Desc": "Expandir todas las categorías de aplicaciones",
+        "Nav_ClearSelection_Desc": "Limpiar la selección de aplicaciones",
+        "Nav_ShowInstalled_Desc": "Mostrar aplicaciones instaladas"
+    }
+}

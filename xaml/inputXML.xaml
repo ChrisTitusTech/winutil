@@ -1081,7 +1081,7 @@
         </Grid.ColumnDefinitions>
         <!-- Offline banner -->
         <Border Name="WPFOfflineBanner" Grid.Row="0" Background="#8B0000" Visibility="Collapsed" Padding="6,4">
-            <TextBlock Text="&#x26A0; Offline Mode - No Internet Connection" Foreground="White" FontWeight="Bold"
+            <TextBlock Name="WPFOfflineBannerTextBlock" Text="&#x26A0; Offline Mode - No Internet Connection" Foreground="White" FontWeight="Bold"
                 HorizontalAlignment="Center" FontSize="13" Background="Transparent"/>
         </Border>
         <Grid Grid.Row="1" Background="Transparent">
@@ -1268,7 +1268,8 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top">
                     <Border Background="{DynamicResource MainBackgroundColor}" BorderBrush="{DynamicResource MainForegroundColor}" BorderThickness="1" CornerRadius="0" Margin="0">
                         <StackPanel Background="{DynamicResource MainBackgroundColor}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="200">
-                            <TextBlock Text="Font Scaling"
+                            <TextBlock Name="FontScalingTitleTextBlock"
+                                       Text="Font Scaling"
                                        FontSize="{DynamicResource ButtonFontSize}"
                                        Foreground="{DynamicResource MainForegroundColor}"
                                        HorizontalAlignment="Center"
@@ -1276,7 +1277,8 @@
                                        FontWeight="Bold"/>
                             <Separator Margin="5,0,5,5"/>
                             <StackPanel Orientation="Horizontal" Margin="10,5,10,10">
-                                <TextBlock Text="Small"
+                                <TextBlock Name="FontScalingSmallTextBlock"
+                                           Text="Small"
                                            FontSize="{DynamicResource ButtonFontSize}"
                                            Foreground="{DynamicResource MainForegroundColor}"
                                            VerticalAlignment="Center"
@@ -1293,7 +1295,8 @@
                                         Width="120"
                                         VerticalAlignment="Center"
                                         AutomationProperties.Name="Font Scaling"/>
-                                <TextBlock Text="Large"
+                                <TextBlock Name="FontScalingLargeTextBlock"
+                                           Text="Large"
                                            FontSize="{DynamicResource ButtonFontSize}"
                                            Foreground="{DynamicResource MainForegroundColor}"
                                            VerticalAlignment="Center"
@@ -1356,6 +1359,9 @@
                                     <ToolTip Content="Export a read-only diagnostics report for troubleshooting."/>
                                 </MenuItem.ToolTip>
                             </MenuItem>
+                            <Separator/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="English" Name="EnglishLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
+                            <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Espa&#xF1;ol" Name="SpanishLanguageMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
                             <Separator/>
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="About" Name="AboutMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
                             <MenuItem FontSize="{DynamicResource ButtonFontSize}" Header="Documentation" Name="DocumentationMenuItem" Foreground="{DynamicResource MainForegroundColor}"/>
@@ -1555,7 +1561,7 @@
                             </Grid.RowDefinitions>
 
                             <StackPanel Background="Transparent" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
-                                <Label Content="Recommended Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
+                                <Label Name="WPFTweaksRecommendedLabel" Content="Recommended Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
                                 <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,0">
                                     <Button Name="WPFstandard" Content=" Standard " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                                     <Button Name="WPFminimal" Content=" Minimal " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
@@ -1572,7 +1578,7 @@
 
                             <Border Grid.ColumnSpan="2" Grid.Row="2" Grid.Column="0" Style="{StaticResource BorderStyle}">
                                 <StackPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Left">
-                                    <TextBlock Padding="10">
+                                    <TextBlock Name="WPFTweaksNoteTextBlock" Padding="10">
                                         Note: Hover over items to get a better description. Please be careful as many of these tweaks will heavily modify your system.
                                         <LineBreak/>Recommended selections are for normal users and if you are unsure do NOT check anything else!
                                     </TextBlock>
@@ -1671,11 +1677,13 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Grid.Row="0" Margin="10,10,10,14">
-                            <TextBlock Text="Windows Update Profiles"
+                            <TextBlock Name="WPFUpdatesTitle"
+                                       Text="Windows Update Profiles"
                                        FontSize="24"
                                        FontWeight="Bold"
                                        Foreground="{DynamicResource MainForegroundColor}"/>
-                            <TextBlock Text="Choose how Windows receives updates. Each profile replaces the Windows Update settings managed by WinUtil."
+                            <TextBlock Name="WPFUpdatesDescription"
+                                       Text="Choose how Windows receives updates. Each profile replaces the Windows Update settings managed by WinUtil."
                                        Margin="0,6,0,0"
                                        FontSize="13"
                                        TextWrapping="Wrap"
@@ -1695,21 +1703,24 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <StackPanel Grid.Row="0" Margin="0,0,0,14">
-                                        <TextBlock Text="Recommended"
+                                        <TextBlock Name="WPFUpdatesRecommendedTitle"
+                                                   Text="Recommended"
                                                    FontSize="20"
                                                    FontWeight="Bold"
                                                    Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Balanced security and stability"
+                                        <TextBlock Name="WPFUpdatesRecommendedSubtitle"
+                                                   Text="Balanced security and stability"
                                                    Margin="0,4,0,0"
                                                    FontSize="13"
                                                    Foreground="{DynamicResource MainForegroundColor}"/>
                                     </StackPanel>
                                     <StackPanel Grid.Row="1">
-                                        <TextBlock Text="- Defers feature updates for 365 days" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Defers quality updates for 4 days" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Excludes drivers from quality updates" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Notifies when downloaded updates are ready to install" TextWrapping="Wrap" Margin="0,0,0,12" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Available on Windows Pro, Enterprise, and Education editions."
+                                        <TextBlock Name="WPFUpdatesRecommendedBullet1" Text="- Defers feature updates for 365 days" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFUpdatesRecommendedBullet2" Text="- Defers quality updates for 4 days" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFUpdatesRecommendedBullet3" Text="- Excludes drivers from quality updates" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFUpdatesRecommendedBullet4" Text="- Notifies when downloaded updates are ready to install" TextWrapping="Wrap" Margin="0,0,0,12" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFUpdatesRecommendedEdition"
+                                                   Text="Available on Windows Pro, Enterprise, and Education editions."
                                                    FontSize="11"
                                                    FontStyle="Italic"
                                                    TextWrapping="Wrap"
@@ -1732,20 +1743,23 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <StackPanel Grid.Row="0" Margin="0,0,0,14">
-                                        <TextBlock Text="Windows Default"
+                                        <TextBlock Name="WPFUpdatesDefaultTitle"
+                                                   Text="Windows Default"
                                                    FontSize="20"
                                                    FontWeight="Bold"
                                                    Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Return control to Windows"
+                                        <TextBlock Name="WPFUpdatesDefaultSubtitle"
+                                                   Text="Return control to Windows"
                                                    Margin="0,4,0,0"
                                                    FontSize="13"
                                                    Foreground="{DynamicResource MainForegroundColor}"/>
                                     </StackPanel>
                                     <StackPanel Grid.Row="1">
-                                        <TextBlock Text="- Removes Windows Update policies applied by WinUtil" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Restores update service startup settings" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Re-enables update scheduled tasks" TextWrapping="Wrap" Margin="0,0,0,12" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Use this to undo the Recommended or Disable profile."
+                                        <TextBlock Name="WPFUpdatesDefaultBullet1" Text="- Removes Windows Update policies applied by WinUtil" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFUpdatesDefaultBullet2" Text="- Restores update service startup settings" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFUpdatesDefaultBullet3" Text="- Re-enables update scheduled tasks" TextWrapping="Wrap" Margin="0,0,0,12" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFUpdatesDefaultUndoHint"
+                                                   Text="Use this to undo the Recommended or Disable profile."
                                                    FontSize="11"
                                                    FontStyle="Italic"
                                                    TextWrapping="Wrap"
@@ -1768,21 +1782,24 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <StackPanel Grid.Row="0" Margin="0,0,0,14">
-                                        <TextBlock Text="Disable Updates"
+                                        <TextBlock Name="WPFUpdatesDisableTitle"
+                                                   Text="Disable Updates"
                                                    FontSize="20"
                                                    FontWeight="Bold"
                                                    Foreground="Red"/>
-                                        <TextBlock Text="Advanced use only"
+                                        <TextBlock Name="WPFUpdatesDisableSubtitle"
+                                                   Text="Advanced use only"
                                                    Margin="0,4,0,0"
                                                    FontSize="13"
                                                    FontWeight="SemiBold"
                                                    Foreground="Red"/>
                                     </StackPanel>
                                     <StackPanel Grid.Row="1">
-                                        <TextBlock Text="- Disables automatic update policy" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Stops update services and scheduled tasks" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="- Clears downloaded update files" TextWrapping="Wrap" Margin="0,0,0,12" Foreground="{DynamicResource MainForegroundColor}"/>
-                                        <TextBlock Text="Security updates will not be installed while this profile is active."
+                                        <TextBlock Name="WPFUpdatesDisableBullet1" Text="- Disables automatic update policy" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFUpdatesDisableBullet2" Text="- Stops update services and scheduled tasks" TextWrapping="Wrap" Margin="0,0,0,7" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFUpdatesDisableBullet3" Text="- Clears downloaded update files" TextWrapping="Wrap" Margin="0,0,0,12" Foreground="{DynamicResource MainForegroundColor}"/>
+                                        <TextBlock Name="WPFUpdatesDisableWarning"
+                                                   Text="Security updates will not be installed while this profile is active."
                                                    FontSize="11"
                                                    FontStyle="Italic"
                                                    TextWrapping="Wrap"
@@ -1800,7 +1817,8 @@
                         </UniformGrid>
 
                         <Border Grid.Row="2" Style="{StaticResource BorderStyle}" Margin="8,14,8,8" Padding="12">
-                            <TextBlock Text="Changes apply system-wide. Restart Windows after switching profiles. Use Restore Defaults to undo WinUtil update policies."
+                            <TextBlock Name="WPFUpdatesSystemWide"
+                                       Text="Changes apply system-wide. Restart Windows after switching profiles. Use Restore Defaults to undo WinUtil update policies."
                                        TextWrapping="Wrap"
                                        HorizontalAlignment="Center"
                                        Foreground="{DynamicResource MainForegroundColor}"/>
@@ -2063,15 +2081,15 @@
                             <TabItem Name="WPFWin11ISOSelectSection" Tag="&#xE958;" Header="1   Select ISO">
                                 <StackPanel Style="{StaticResource Win11StepColumn}">
                                     <TextBlock Text="&#xE958;" Style="{StaticResource Win11StepHero}"/>
-                                    <TextBlock Style="{StaticResource Win11StepTitle}" Text="Select your Windows 11 ISO"/>
-                                    <TextBlock Style="{StaticResource Win11StepSubtitle}">
+                                    <TextBlock Name="WPFWin11ISOStep1Title" Style="{StaticResource Win11StepTitle}" Text="Select your Windows 11 ISO"/>
+                                    <TextBlock Name="WPFWin11ISOStep1Subtitle" Style="{StaticResource Win11StepSubtitle}">
                                         Choose an official Windows 11 ISO downloaded from Microsoft. It will be
                                         mounted and checked before anything is changed.
                                     </TextBlock>
 
                                     <Border Style="{StaticResource Win11FormPanel}" Margin="0,0,0,16">
                                         <StackPanel>
-                                            <TextBlock Style="{StaticResource Win11StepLabel}" Text="ISO file"/>
+                                            <TextBlock Name="WPFWin11ISOFileLabel" Style="{StaticResource Win11StepLabel}" Text="ISO file"/>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>
@@ -2108,14 +2126,14 @@
                                         <StackPanel>
                                             <TextBlock Style="{StaticResource Win11StepLabel}" Foreground="OrangeRed" Margin="0,0,0,10">
                                                 <Run FontFamily="Segoe MDL2 Assets" Text="&#xE7BA;"/>
-                                                <Run Text=" You must use an official Microsoft ISO"/>
+                                                <Run Name="WPFWin11ISOMicrosoftWarningRun" Text=" You must use an official Microsoft ISO"/>
                                             </TextBlock>
-                                            <TextBlock Style="{StaticResource Win11StepBody}">
+                                            <TextBlock Name="WPFWin11ISOUnofficialWarning" Style="{StaticResource Win11StepBody}">
                                                 Third-party, pre-modified, or unofficial images are not supported
                                                 and may produce broken results. This is only meant for fresh and
                                                 new Windows installs.
                                             </TextBlock>
-                                            <TextBlock Style="{StaticResource Win11StepBody}" Margin="0,0,0,12">
+                                            <TextBlock Name="WPFWin11ISODownloadPageHint" Style="{StaticResource Win11StepBody}" Margin="0,0,0,12">
                                                 On the download page choose Windows 11, your language, and 64-bit (x64).
                                             </TextBlock>
                                             <Button Name="WPFWin11ISODownloadLink"
@@ -2129,8 +2147,8 @@
                             <TabItem Name="WPFWin11ISOModifySection" IsEnabled="False" Tag="&#xE713;" Header="2   Modify Image">
                                 <StackPanel Style="{StaticResource Win11StepColumn}">
                                     <TextBlock Text="&#xE713;" Style="{StaticResource Win11StepHero}"/>
-                                    <TextBlock Style="{StaticResource Win11StepTitle}" Text="Modify the image"/>
-                                    <TextBlock Style="{StaticResource Win11StepSubtitle}">
+                                    <TextBlock Name="WPFWin11ISOStep2Title" Style="{StaticResource Win11StepTitle}" Text="Modify the image"/>
+                                    <TextBlock Name="WPFWin11ISOStep2Subtitle" Style="{StaticResource Win11StepSubtitle}">
                                         Pick what goes into the image, then start. This takes several minutes
                                         depending on your hardware.
                                     </TextBlock>
@@ -2149,10 +2167,10 @@
                                                        VerticalAlignment="Center" Margin="12,0,0,0"/>
                                             <StackPanel Grid.Column="0" Orientation="Horizontal">
                                                 <TextBlock Text="&#xE958;" Style="{StaticResource Win11StepIcon}"/>
-                                                <TextBlock Style="{StaticResource Win11StepCaption}" Text="Mounted at"/>
+                                                <TextBlock Name="WPFWin11ISOMountedAtLabel" Style="{StaticResource Win11StepCaption}" Text="Mounted at"/>
                                                 <TextBlock Name="WPFWin11ISOMountDriveLetter" Style="{StaticResource Win11StepValue}"/>
                                                 <TextBlock Text="&#xE8A5;" Style="{StaticResource Win11StepIcon}" Margin="22,0,8,0"/>
-                                                <TextBlock Style="{StaticResource Win11StepCaption}" Text="Image file"/>
+                                                <TextBlock Name="WPFWin11ISOImageFileLabel" Style="{StaticResource Win11StepCaption}" Text="Image file"/>
                                                 <TextBlock Name="WPFWin11ISOImageFile" Style="{StaticResource Win11StepValue}"/>
                                             </StackPanel>
                                         </Grid>
@@ -2160,7 +2178,7 @@
 
                                     <Border Style="{StaticResource Win11FormPanel}" Margin="0,0,0,16">
                                         <StackPanel>
-                                            <TextBlock Style="{StaticResource Win11StepLabel}" Text="Windows edition"/>
+                                            <TextBlock Name="WPFWin11ISOEditionLabel" Style="{StaticResource Win11StepLabel}" Text="Windows edition"/>
                                             <ComboBox Name="WPFWin11ISOEditionComboBox"
                                                       AutomationProperties.Name="Windows edition"
                                                       FontSize="{DynamicResource FontSize}"
@@ -2185,30 +2203,30 @@
 
                                     <Border Style="{StaticResource Win11InfoPanel}">
                                         <StackPanel>
-                                            <TextBlock Style="{StaticResource Win11StepLabel}" Margin="0,0,0,12" Text="What this does to the image"/>
+                                            <TextBlock Name="WPFWin11ISODoesHeader" Style="{StaticResource Win11StepLabel}" Margin="0,0,0,12" Text="What this does to the image"/>
                                             <StackPanel Style="{StaticResource Win11SummaryRow}">
                                                 <TextBlock Text="&#xE74D;" Style="{StaticResource Win11SummaryIcon}"/>
-                                                <TextBlock Style="{StaticResource Win11StepBody}" Margin="0"
+                                                <TextBlock Name="WPFWin11ISODoesRemoveApps" Style="{StaticResource Win11StepBody}" Margin="0"
                                                            Text="Removes the preinstalled apps and the OneDrive setup"/>
                                             </StackPanel>
                                             <StackPanel Style="{StaticResource Win11SummaryRow}">
                                                 <TextBlock Text="&#xE950;" Style="{StaticResource Win11SummaryIcon}"/>
-                                                <TextBlock Style="{StaticResource Win11StepBody}" Margin="0"
+                                                <TextBlock Name="WPFWin11ISODoesBypassTPM" Style="{StaticResource Win11StepBody}" Margin="0"
                                                            Text="Bypasses the TPM, Secure Boot, CPU, RAM and storage checks"/>
                                             </StackPanel>
                                             <StackPanel Style="{StaticResource Win11SummaryRow}">
                                                 <TextBlock Text="&#xE77B;" Style="{StaticResource Win11SummaryIcon}"/>
-                                                <TextBlock Style="{StaticResource Win11StepBody}" Margin="0"
+                                                <TextBlock Name="WPFWin11ISODoesSkipMS" Style="{StaticResource Win11StepBody}" Margin="0"
                                                            Text="Skips the Microsoft account screen so you can use a local account"/>
                                             </StackPanel>
                                             <StackPanel Style="{StaticResource Win11SummaryRow}">
                                                 <TextBlock Text="&#xE7EE;" Style="{StaticResource Win11SummaryIcon}"/>
-                                                <TextBlock Style="{StaticResource Win11StepBody}" Margin="0"
+                                                <TextBlock Name="WPFWin11ISODoesTelemetry" Style="{StaticResource Win11StepBody}" Margin="0"
                                                            Text="Turns off telemetry, Copilot, the chat icon and search box suggestions"/>
                                             </StackPanel>
                                             <StackPanel Style="{StaticResource Win11SummaryRow}" Margin="0">
                                                 <TextBlock Text="&#xE8EF;" Style="{StaticResource Win11SummaryIcon}"/>
-                                                <TextBlock Style="{StaticResource Win11StepBody}" Margin="0"
+                                                <TextBlock Name="WPFWin11ISODoesPinEdition" Style="{StaticResource Win11StepBody}" Margin="0"
                                                            Text="Pins the edition you picked above so Setup does not choose another one"/>
                                             </StackPanel>
                                         </StackPanel>
@@ -2220,8 +2238,8 @@
                             <TabItem Name="WPFWin11ISOOutputSection" IsEnabled="False" Tag="&#xE88E;" Header="3   Output">
                                 <StackPanel Style="{StaticResource Win11StepColumn}">
                                     <TextBlock Text="&#xE88E;" Style="{StaticResource Win11StepHero}"/>
-                                    <TextBlock Style="{StaticResource Win11StepTitle}" Text="Your image is ready"/>
-                                    <TextBlock Style="{StaticResource Win11StepSubtitle}">
+                                    <TextBlock Name="WPFWin11ISOStep3Title" Style="{StaticResource Win11StepTitle}" Text="Your image is ready"/>
+                                    <TextBlock Name="WPFWin11ISOStep3Subtitle" Style="{StaticResource Win11StepSubtitle}">
                                         Save the modified image as an ISO file, or write it straight to a USB
                                         drive you can boot from.
                                     </TextBlock>
@@ -2250,9 +2268,9 @@
                                             Margin="0,14,0,0">
                                         <StackPanel>
                                             <TextBlock Style="{StaticResource Win11StepBody}">
-                                                <Run FontWeight="Bold" Foreground="OrangeRed">!! All data on the selected USB drive will be permanently erased !!</Run>
+                                                <Run Name="WPFWin11ISOUSBEraseWarningRun" FontWeight="Bold" Foreground="OrangeRed">!! All data on the selected USB drive will be permanently erased !!</Run>
                                             </TextBlock>
-                                            <TextBlock Style="{StaticResource Win11StepLabel}" Text="USB drive"/>
+                                            <TextBlock Name="WPFWin11ISOUSBLabel" Style="{StaticResource Win11StepLabel}" Text="USB drive"/>
                                             <Grid Margin="0,0,0,12">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>
@@ -2277,7 +2295,7 @@
                                     <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="0,1,0,0"
                                             Margin="0,20,0,0" Padding="0,14,0,0">
                                         <StackPanel>
-                                            <TextBlock Style="{StaticResource Win11StepSubtitle}" Margin="0,0,0,10"
+                                            <TextBlock Name="WPFWin11ISODoneSubtitle" Style="{StaticResource Win11StepSubtitle}" Margin="0,0,0,10"
                                                        Text="Done with this image? Clear the temporary files and start again from step 1."/>
                                             <Button Name="WPFWin11ISOCleanResetButton"
                                                     HorizontalAlignment="Center" MinWidth="240"
@@ -2350,7 +2368,8 @@
                                     <TextBlock Name="WPFWin11ISOWorkingLabel"
                                                Style="{StaticResource Win11StepTitle}"
                                                Text="Working..."/>
-                                    <TextBlock Style="{StaticResource Win11StepSubtitle}"
+                                    <TextBlock Name="WPFWin11ISOWorkingSubtitle"
+                                               Style="{StaticResource Win11StepSubtitle}"
                                                Margin="0"
                                                Text="This can take several minutes. Progress is written to the status log."/>
                                 </StackPanel>
@@ -2372,7 +2391,7 @@
                                            Background="Transparent"
                                            Foreground="{DynamicResource LabelboxForegroundColor}"
                                            VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                <TextBlock FontSize="{DynamicResource FontSize}"
+                                <TextBlock Name="WPFWin11ISOStatusLogLabel" FontSize="{DynamicResource FontSize}"
                                            FontWeight="Bold"
                                            Background="Transparent"
                                            Foreground="{DynamicResource LabelboxForegroundColor}"
@@ -2423,7 +2442,7 @@
                             </Grid.RowDefinitions>
 
                             <StackPanel Background="Transparent" Orientation="Vertical" Grid.Row="0" Grid.Column="0" Margin="5">
-                                <Label Content="Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
+                                <Label Name="WPFAppxSelectionsLabel" Content="Selections:" FontSize="{DynamicResource FontSize}" VerticalAlignment="Center" Margin="2"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,2,0,0">
                                     <Button Name="WPFDefaultAppxSelection" Content=" Default " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
                                     <Button Name="WPFGetInstalledAppx" Content=" Select Installed " Margin="2" Width="{DynamicResource ButtonWidth}" Height="{DynamicResource ButtonHeight}"/>
@@ -2437,7 +2456,7 @@
 
                             <Border Grid.Row="2" Style="{StaticResource BorderStyle}" Margin="5,15,5,5">
                                 <WrapPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Left">
-                                    <TextBlock Padding="10" TextWrapping="Wrap" Foreground="{DynamicResource MainForegroundColor}">
+                                    <TextBlock Name="WPFAppxNoteTextBlock" Padding="10" TextWrapping="Wrap" Foreground="{DynamicResource MainForegroundColor}">
                                         Note: Select the Windows AppX packages you wish to install or remove.
                                         <LineBreak/>'Install Selected' registers a local manifest for the current user when available, then falls back to the Microsoft Store.
                                         <LineBreak/>'Remove Selected' removes packages for all users and stops new profiles from getting them by default.
